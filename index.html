@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Médias Acadêmicas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+    <style>
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0), rgba(0, 0, 0, 0)),
+                        url('https://images.pexels.com/photos/256262/pexels-photo-256262.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.85);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table {
+            background-color: rgba(255, 255, 255, 0.98);
+            margin-bottom: 0;
+        }
+
+        .progress {
+            height: 25px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #0056b3, #004494);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 0.75rem;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+
+        .badge {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        canvas {
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Estilos para a seção do autor */
+        .author-section {
+            margin-top: 2rem;
+        }
+
+        .author-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .author-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #0056b3, #004494);
+        }
+
+        .author-info {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tech-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tech-item {
+            text-align: center;
+        }
+
+        .tech-item img {
+            height: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .tech-item:hover img {
+            transform: translateY(-5px);
+        }
+
+        .tech-item p {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .list-unstyled li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            font-size: 0.95rem;
+        }
+
+        .list-unstyled li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .card-body h4 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .card-body h5 {
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+
+        .card {
+            height: 100%;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem !important;
+        }
+
+        .tech-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 0.5rem;
+        }
+
+        .tech-item {
+            text-align: center;
+            flex: 0 0 auto;
+        }
+
+        .tech-item img {
+            height: 35px;
+            transition: transform 0.3s ease;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .custom-footer {
+            width: 100%;
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .footer-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1.5rem;
+            box-shadow: none;
+            background: none;
+            border-radius: 0;
+        }
+        .footer-avatar {
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #007bff;
+            background: #fff;
+            padding: 4px;
+            transition: transform 0.3s;
+        }
+        .footer-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(0,123,255,0.15);
+        }
+        .footer-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        }
+
+        .frase-motivacional-container {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .frase-motivacional {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .frase-motivacional.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .frase-motivacional .autor {
+            display: block;
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .author-divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #007bff, transparent);
+            margin: 2rem 0;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="container">
+            <h1 class="text-center mb-5">Análise de Médias Acadêmicas</h1>
+            
+            <!-- Resumo Geral -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Média Geral</h5>
+                            <h2 class="display-4">0.0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Disciplinas</h5>
+                            <h2 class="display-4">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Meta</h5>
+                            <h2 class="display-4">0.0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Análise de Sondagem -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Sondagem das Notas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <canvas id="histogramaChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Notas -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Notas por Disciplina</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Formulário para adicionar notas -->
+                    <form id="notaForm" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="disciplina" class="form-label">Disciplina</label>
+                                <input type="text" class="form-control" id="disciplina" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="nota1" class="form-label">Nota 1</label>
+                                <input type="number" class="form-control" id="nota1" step="0.1" min="0" max="20" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="nota2" class="form-label">Nota 2</label>
+                                <input type="number" class="form-control" id="nota2" step="0.1" min="0" max="20" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="nota3" class="form-label">Nota 3</label>
+                                <input type="number" class="form-control" id="nota3" step="0.1" min="0" max="20" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Disciplina</th>
+                                    <th>Nota 1</th>
+                                    <th>Nota 2</th>
+                                    <th>Nota 3</th>
+                                    <th>Média</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notasTableBody">
+                                <!-- Dados serão inseridos via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metas e Objetivos -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Frases Motivacionais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="frase-motivacional-container">
+                        <div id="fraseMotivacional" class="frase-motivacional">
+                            <!-- As frases serão inseridas via JavaScript -->
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-4">
+                        <label for="metaMedia" class="form-label">Meta de Média</label>
+                        <input type="number" class="form-control" id="metaMedia" step="0.1" min="0" max="20">
+                    </div>
+                    <button class="btn btn-primary" onclick="salvarMetas()">Salvar Meta</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção do Autor -->
+        <div class="author-section">
+            <div class="text-center mb-4">
+                <button class="author-btn" onclick="toggleAuthorInfo()">Sobre o Autor</button>
+            </div>
+            <div id="authorInfo" class="author-info" style="display: none;">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Sobre o Autor</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Nome:</strong>
+                                    <span>Geraldo de A. S. Sense</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Idade:</strong>
+                                    <span>18 anos</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Curso:</strong>
+                                    <span>Programador de Informática</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Disciplina favorita:</strong>
+                                    <span>Matemática</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>País de origem:</strong>
+                                    <span>Angola</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Província de origem:</strong>
+                                    <span>Cabinda</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Escolas em Cabinda:</strong>
+                                    <span>Escola do Zôngolo, Escola Industrial</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>País residente atual:</strong>
+                                    <span>Portugal</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Distrito atual:</strong>
+                                    <span>Castelo Branco</span>
+                                </div>
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <strong>Cidade atual:</strong>
+                                    <span>Fundão</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Tecnologias:</strong>
+                                    <div class="tech-logos mt-2">
+                                        <div class="tech-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code">
+                                            <p class="mt-2">VS Code</p>
+                                        </div>
+                                        <div class="tech-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
+                                            <p class="mt-2">Python</p>
+                                        </div>
+                                        <div class="tech-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="Git">
+                                            <p class="mt-2">Git</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé com imagem personalizada e nome -->
+    <footer class="custom-footer">
+        <div class="footer-content">
+            <img src="https://avatars.githubusercontent.com/u/186153287?v=4" alt="Avatar do autor" class="footer-avatar">
+            <span class="footer-name">Geraldo Sense</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script>
+        // Inicialização do histograma
+        const ctx = document.getElementById('histogramaChart').getContext('2d');
+        
+        function calcularDistribuicaoNotas(notas) {
+            const distribuicao = [0, 0, 0, 0];
+            notas.forEach(nota => {
+                const media = calcularMedia(nota.nota1, nota.nota2, nota.nota3);
+                if (media < 5) distribuicao[0]++;
+                else if (media < 10) distribuicao[1]++;
+                else if (media < 15) distribuicao[2]++;
+                else distribuicao[3]++;
+            });
+            return distribuicao;
+        }
+
+        const histogramaChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['0-5', '5-10', '10-15', '15-20'],
+                datasets: [{
+                    label: 'Número de disciplinas',
+                    data: [0, 0, 0, 0],
+                    backgroundColor: 'rgba(255, 215, 0, 0.85)', // amarelo
+                    borderColor: '#FFD700',
+                    borderWidth: 2
+                }, {
+                    label: 'Tendência',
+                    data: [0, 0, 0, 0],
+                    type: 'line',
+                    borderColor: '#ff0000',
+                    backgroundColor: 'rgba(255,0,0,0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0,
+                    pointBackgroundColor: '#ff0000',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Distribuição das Médias por Faixa',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Número de disciplinas',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Faixa de Média',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        let notas = [];
+        
+        function calcularMedia(nota1, nota2, nota3) {
+            return ((parseFloat(nota1) + parseFloat(nota2) + parseFloat(nota3)) / 3).toFixed(1);
+        }
+
+        function determinarStatus(media) {
+            return media >= 9.5 ? 'Aprovado' : 'Reprovado';
+        }
+
+        function calcularMetaRecomendada(notas) {
+            if (notas.length === 0) return 0;
+            
+            let mediaAtual = 0;
+            let maiorMedia = 0;
+            
+            notas.forEach(nota => {
+                const media = parseFloat(calcularMedia(nota.nota1, nota.nota2, nota.nota3));
+                mediaAtual += media;
+                if (media > maiorMedia) {
+                    maiorMedia = media;
+                }
+            });
+            
+            // Atualizar o campo de meta com a maior média
+            document.getElementById('metaMedia').value = maiorMedia.toFixed(1);
+            
+            return maiorMedia.toFixed(1);
+        }
+
+        function atualizarGraficos() {
+            const distribuicao = calcularDistribuicaoNotas(notas);
+            histogramaChart.data.datasets[0].data = distribuicao;
+            histogramaChart.data.datasets[1].data = distribuicao;
+            histogramaChart.update();
+        }
+
+        function atualizarTabela() {
+            const tbody = document.getElementById('notasTableBody');
+            tbody.innerHTML = '';
+            let mediaGeral = 0;
+            let maiorMedia = 0;
+
+            notas.forEach((nota, index) => {
+                const media = calcularMedia(nota.nota1, nota.nota2, nota.nota3);
+                mediaGeral += parseFloat(media);
+                if (parseFloat(media) > maiorMedia) {
+                    maiorMedia = parseFloat(media);
+                }
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${nota.disciplina}</td>
+                    <td>${nota.nota1}</td>
+                    <td>${nota.nota2}</td>
+                    <td>${nota.nota3}</td>
+                    <td>${media}</td>
+                    <td><span class="badge ${determinarStatus(media) === 'Aprovado' ? 'bg-success' : 'bg-danger'}">${determinarStatus(media)}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="removerNota(${index})">Remover</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Atualizar média geral
+            const mediaGeralFinal = (mediaGeral / (notas.length || 1)).toFixed(1);
+            document.querySelector('.card:nth-child(1) .display-4').textContent = mediaGeralFinal;
+            // Atualizar número de disciplinas
+            document.querySelector('.card:nth-child(2) .display-4').textContent = notas.length;
+
+            // Calcular e definir meta automaticamente com a maior média
+            const metaRecomendada = maiorMedia.toFixed(1);
+            document.getElementById('metaMedia').value = metaRecomendada;
+            document.querySelector('.card:nth-child(3) .display-4').textContent = metaRecomendada;
+
+            // Atualizar gráficos
+            atualizarGraficos();
+        }
+
+        // Função para remover nota
+        function removerNota(index) {
+            notas.splice(index, 1);
+            atualizarTabela();
+        }
+
+        // Event listener para o formulário
+        document.getElementById('notaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nota = {
+                disciplina: document.getElementById('disciplina').value,
+                nota1: document.getElementById('nota1').value,
+                nota2: document.getElementById('nota2').value,
+                nota3: document.getElementById('nota3').value
+            };
+
+            notas.push(nota);
+            atualizarTabela();
+            this.reset();
+        });
+
+        // Função para salvar metas
+        function salvarMetas() {
+            const metaMedia = document.getElementById('metaMedia').value;
+            
+            // Atualizar display da meta
+            document.querySelector('.card:nth-child(3) .display-4').textContent = metaMedia;
+            
+            // Salvar no localStorage
+            localStorage.setItem('metaMedia', metaMedia);
+            
+            alert('Meta atualizada com sucesso!');
+        }
+
+        // Modificar o evento de carregamento para não sobrescrever a meta automática
+        window.addEventListener('load', function() {
+            const metaMedia = localStorage.getItem('metaMedia');
+            
+            if (metaMedia && notas.length === 0) {
+                document.getElementById('metaMedia').value = metaMedia;
+                document.querySelector('.card:nth-child(3) .display-4').textContent = metaMedia;
+            }
+        });
+
+        function toggleAuthorInfo() {
+            const authorInfo = document.getElementById('authorInfo');
+            if (authorInfo.style.display === 'none' || !authorInfo.style.display) {
+                authorInfo.style.display = 'block';
+            } else {
+                authorInfo.style.display = 'none';
+            }
+        }
+
+        const frasesMotivacionais = [
+            {
+                texto: "A educação é a arma mais poderosa que você pode usar para mudar o mundo.",
+                autor: "Nelson Mandela"
+            },
+            {
+                texto: "O conhecimento é o investimento que paga os melhores juros.",
+                autor: "Benjamin Franklin"
+            },
+            {
+                texto: "A persistência é o caminho do êxito.",
+                autor: "Charles Chaplin"
+            },
+            {
+                texto: "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
+                autor: "Robert Collier"
+            },
+            {
+                texto: "Aprender é como remar contra a corrente: se parar, regride.",
+                autor: "Provérbio Chinês"
+            },
+            {
+                texto: "O futuro pertence àqueles que acreditam na beleza de seus sonhos.",
+                autor: "Eleanor Roosevelt"
+            },
+            {
+                texto: "A educação não é preparação para a vida; a educação é a própria vida.",
+                autor: "John Dewey"
+            },
+            {
+                texto: "O conhecimento é o tesouro que ninguém pode roubar.",
+                autor: "Provérbio Árabe"
+            },
+            {
+                texto: "Cada dia é uma nova oportunidade para ser melhor.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "O estudo é a chave que abre as portas do futuro.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "A sabedoria começa na admiração.",
+                autor: "Sócrates"
+            },
+            {
+                texto: "O conhecimento é a luz que ilumina o caminho do sucesso.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "Aprender é a única coisa que a mente nunca se cansa, nunca tem medo e nunca se arrepende.",
+                autor: "Leonardo da Vinci"
+            },
+            {
+                texto: "O investimento em conhecimento paga os melhores dividendos.",
+                autor: "Benjamin Franklin"
+            },
+            {
+                texto: "A educação é o passaporte para o futuro, pois o amanhã pertence àqueles que se preparam hoje.",
+                autor: "Malcolm X"
+            },
+            {
+                texto: "O conhecimento é como um jardim: se não for cultivado, não pode ser colhido.",
+                autor: "Provérbio Africano"
+            },
+            {
+                texto: "Aprender é descobrir aquilo que você já sabe.",
+                autor: "Richard Bach"
+            },
+            {
+                texto: "O sucesso é construído dia a dia, com dedicação e persistência.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "A educação é a base para uma vida melhor.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "O conhecimento é a única riqueza que aumenta quando compartilhada.",
+                autor: "Provérbio Indiano"
+            },
+            {
+                texto: "Aprender é a única habilidade que não tem limites.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "O estudo é o alimento da mente.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "A educação é a chave para abrir a porta dourada da liberdade.",
+                autor: "George Washington Carver"
+            },
+            {
+                texto: "O conhecimento é o melhor investimento que você pode fazer.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "Aprender é como escalar uma montanha: cada passo te leva mais alto.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
+                autor: "Robert Collier"
+            },
+            {
+                texto: "A educação é a arma mais poderosa que você pode usar para mudar o mundo.",
+                autor: "Nelson Mandela"
+            },
+            {
+                texto: "O conhecimento é a luz que ilumina o caminho.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "Aprender é a única coisa que a mente nunca se cansa.",
+                autor: "Leonardo da Vinci"
+            },
+            {
+                texto: "O estudo é o alimento da alma.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "A educação é o passaporte para o futuro.",
+                autor: "Malcolm X"
+            },
+            {
+                texto: "O conhecimento é como um jardim: se não for cultivado, não pode ser colhido.",
+                autor: "Provérbio Africano"
+            },
+            {
+                texto: "Aprender é descobrir aquilo que você já sabe.",
+                autor: "Richard Bach"
+            },
+            {
+                texto: "O sucesso é construído dia a dia.",
+                autor: "Desconhecido"
+            },
+            {
+                texto: "A educação é a base para uma vida melhor.",
+                autor: "Desconhecido"
+            }
+        ];
+
+        let fraseAtual = 0;
+        const elementoFrase = document.getElementById('fraseMotivacional');
+
+        function mostrarProximaFrase() {
+            elementoFrase.classList.remove('visible');
+            
+            setTimeout(() => {
+                const frase = frasesMotivacionais[fraseAtual];
+                elementoFrase.innerHTML = `"${frase.texto}"<span class="autor">- ${frase.autor}</span>`;
+                elementoFrase.classList.add('visible');
+                
+                fraseAtual = (fraseAtual + 1) % frasesMotivacionais.length;
+            }, 500);
+        }
+
+        // Iniciar a exibição das frases
+        mostrarProximaFrase();
+        setInterval(mostrarProximaFrase, 5000);
+    </script>
+</body>
+</html>
